@@ -1,0 +1,442 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="description" content="Compre seguidores para Instagram e pague no PIX.">
+<style>[hidden]{display:none!important}body{margin:0}img{max-width:100%}</style>
+<title>Impulso Seguidores</title>
+<link rel="icon" href="/favicon.ico?v=2" sizes="any">
+<link rel="shortcut icon" href="/favicon.ico?v=2">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900&family=Nunito+Sans:opsz,wght@6..12,400;6..12,600;6..12,700&family=Kalam:wght@700&display=swap">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<style>
+/* Layout: palco escuro com brilho neon — herói com alvo animado, faixa de preço, funil pacote → dados → PIX com resumo fixo ao lado */
+:root{
+  color-scheme:dark;
+  --bg:#050d24; --bg2:#0a1a45; --surface:#0d1d4a; --surface2:#112659;
+  --ink:#ffffff; --muted:#a9bbe6; --line:#1f3b85;
+  --blue:#1e6bff; --cyan:#29d3ff; --glow:rgba(41,170,255,.55);
+  --red:#ee2b45; --ok:#29e0a0; --wa:#25c45f;
+  --f-display:"Nunito",ui-rounded,"Arial Rounded MT Bold",system-ui,sans-serif;
+  --f-body:"Nunito Sans",ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-script:"Kalam","Segoe Print","Comic Sans MS",cursive;
+}
+*{box-sizing:border-box}
+body{
+  background:
+    radial-gradient(900px 500px at 85% -10%, rgba(30,107,255,.45), transparent 60%),
+    radial-gradient(700px 500px at -10% 40%, rgba(41,211,255,.18), transparent 60%),
+    linear-gradient(180deg,var(--bg2),var(--bg) 45%);
+  background-color:var(--bg);
+  color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.55;
+  padding-inline:16px;padding-block:0 100px;min-height:100%;
+}
+.wrap{max-width:1080px;margin:0 auto}
+a{color:inherit}
+
+header.top{display:flex;justify-content:space-between;align-items:center;padding-block:18px;gap:12px;flex-wrap:wrap}
+.brand{font-family:var(--f-display);font-weight:900;font-size:1.2rem;display:flex;align-items:center;gap:8px}
+.brand svg{width:26px;height:26px}
+.topwa{font-size:.9rem;color:var(--muted)}
+.topwa a{color:var(--cyan);font-weight:700;text-decoration:none}
+
+/* HERO */
+.hero{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:32px;align-items:center;padding-block:20px 10px}
+.hero .target-box{width:220px;justify-self:center}
+@media (max-width:760px){.hero{grid-template-columns:minmax(0,1fr)}.hero .target-box{order:-1;width:150px}}
+h1{font-family:var(--f-display);font-weight:900;margin:0;line-height:.98;letter-spacing:-.02em;text-wrap:balance}
+h1 .l1{display:block;font-size:clamp(1.9rem,5vw,3.1rem)}
+h1 .l2{display:block;font-size:clamp(2.6rem,7.5vw,4.6rem);background:linear-gradient(180deg,#bff3ff,var(--cyan) 45%,var(--blue));-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 0 18px var(--glow))}
+.script{font-family:var(--f-script);font-size:clamp(1.8rem,4.6vw,2.8rem);transform:rotate(-4deg);display:inline-block;margin-top:6px;position:relative}
+.script .verified{width:.85em;height:.85em;vertical-align:-.08em;margin-left:.15em;filter:drop-shadow(0 0 8px rgba(29,155,240,.6))}
+.script::after{content:"";position:absolute;left:0;right:-6%;bottom:-4px;height:5px;border-radius:5px;background:linear-gradient(90deg,var(--blue),var(--cyan));box-shadow:0 0 12px var(--glow)}
+.lead{color:var(--muted);font-size:1.08rem;max-width:52ch;margin:22px 0 0}
+
+.target-box{position:relative;aspect-ratio:1;width:100%;max-width:100%}
+.target-box::before{content:"";position:absolute;inset:8%;border-radius:50%;background:radial-gradient(circle,rgba(41,170,255,.45),transparent 65%);filter:blur(14px);animation:pulse 2.4s ease-in-out infinite}
+.target-box svg{position:relative;width:100%;height:100%;overflow:visible}
+.badge1k{position:absolute;top:-4%;right:-8%;background:var(--red);color:#fff;font-family:var(--f-display);font-weight:900;font-size:1rem;padding:4px 11px;border-radius:12px;box-shadow:0 8px 20px rgba(238,43,69,.45);animation:pop 6s ease-in-out infinite}
+.badge1k::after{content:"";position:absolute;left:18px;bottom:-9px;border:9px solid transparent;border-top-color:var(--red);border-bottom:0}
+
+#arrow{transform-box:view-box;transform-origin:100px 100px;animation:shoot 6s cubic-bezier(.2,.8,.3,1) infinite}
+#rings{transform-box:view-box;transform-origin:100px 100px;animation:hit 6s ease-out infinite}
+@keyframes shoot{
+  0%{transform:translate(150px,-150px);opacity:0}
+  4%{opacity:1}
+  13%{transform:translate(0,0) rotate(0)}
+  16%{transform:rotate(-5deg)} 19%{transform:rotate(4deg)} 22%{transform:rotate(-2deg)} 25%{transform:rotate(0)}
+  88%{transform:translate(0,0);opacity:1}
+  96%{transform:translate(0,0);opacity:0}
+  100%{transform:translate(150px,-150px);opacity:0}
+}
+@keyframes hit{0%,12%{transform:scale(1)}15%{transform:scale(.94)}20%{transform:scale(1.03)}26%,100%{transform:scale(1)}}
+@keyframes pulse{0%,100%{opacity:.7;transform:scale(.96)}50%{opacity:1;transform:scale(1.04)}}
+@keyframes pop{0%,12%{transform:scale(.6);opacity:0}17%{transform:scale(1.12);opacity:1}22%,88%{transform:scale(1);opacity:1}96%,100%{transform:scale(.6);opacity:0}}
+
+/* Faixa de preço */
+.priceband{margin-block:28px 10px;border:2px solid var(--cyan);border-radius:22px;background:linear-gradient(180deg,rgba(13,29,74,.9),rgba(5,13,36,.9));box-shadow:0 0 0 4px rgba(41,211,255,.12),0 0 36px var(--glow);display:grid;grid-template-columns:auto auto;justify-content:center;align-items:center;gap:10px 34px;padding:22px 20px}
+@media (max-width:560px){.priceband{grid-template-columns:minmax(0,1fr);text-align:center}}
+.pb-qty{font-family:var(--f-display);font-weight:900;line-height:.9}
+.pb-qty b{display:block;font-size:clamp(3.2rem,9vw,5rem);background:linear-gradient(180deg,#fff,#c9d6f2);-webkit-background-clip:text;background-clip:text;color:transparent}
+.pb-qty span{font-size:clamp(1.3rem,3.6vw,1.9rem);letter-spacing:.02em}
+.pb-price{border-left:3px solid var(--cyan);padding-left:28px;display:grid;gap:2px}
+@media (max-width:560px){.pb-price{border-left:0;padding-left:0;border-top:3px solid var(--cyan);padding-top:12px}}
+.pb-price small{font-family:var(--f-display);font-weight:800;font-size:1.25rem;letter-spacing:.06em}
+.pb-price .val{font-family:var(--f-display);font-weight:900;color:var(--cyan);line-height:1;display:flex;align-items:flex-start;gap:4px;font-variant-numeric:tabular-nums;justify-content:inherit}
+.pb-price .val i{font-style:normal;font-size:1.6rem;margin-top:.6em}
+.pb-price .val b{font-size:clamp(3.4rem,10vw,5.2rem)}
+.pb-price .val sup{font-size:1.8rem;margin-top:.35em}
+@media (max-width:560px){.pb-price .val{justify-content:center}}
+
+.trust{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-block:22px 34px}
+@media (max-width:620px){.trust{grid-template-columns:minmax(0,1fr)}}
+.trust div{display:flex;align-items:center;gap:12px;font-family:var(--f-display);font-weight:800;text-transform:uppercase;font-size:.92rem;line-height:1.2;letter-spacing:.02em}
+.trust svg{width:38px;height:38px;flex:none;color:var(--cyan);filter:drop-shadow(0 0 6px var(--glow))}
+
+/* Funil */
+.grid{display:grid;grid-template-columns:minmax(0,1fr) 330px;gap:28px;align-items:start}
+@media (max-width:860px){.grid{grid-template-columns:minmax(0,1fr)}}
+section.step{display:grid;gap:16px;padding-block:8px 32px}
+.stephead{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+.stepnum{font-family:var(--f-display);font-weight:800;font-size:.8rem;color:var(--cyan);letter-spacing:.1em}
+h2{font-family:var(--f-display);font-weight:900;font-size:1.6rem;margin:0}
+
+.packs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;padding-top:10px}
+@media (max-width:1000px) and (min-width:861px),(max-width:700px){.packs{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:380px){.packs{grid-template-columns:minmax(0,1fr)}}
+.pack{text-align:center;justify-items:center}
+.pack .row,.pack .total{flex-direction:column;align-items:center;justify-content:center;gap:2px;width:100%}
+.pack .row span:last-child{color:var(--ink);font-weight:700}
+.pack .total span{font-size:.8rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;font-weight:700}
+.pack .tag{left:50%;transform:translateX(-50%);white-space:nowrap}
+.pack{position:relative;text-align:center;background:linear-gradient(180deg,var(--surface2),var(--surface));border:2px solid var(--line);border-radius:18px;padding:22px 18px 18px;cursor:pointer;color:var(--ink);font:inherit;display:grid;gap:4px;transition:border-color .15s,transform .15s,box-shadow .15s}
+.pack:hover{transform:translateY(-3px);border-color:var(--blue)}
+.pack:focus-visible{outline:3px solid var(--cyan);outline-offset:3px}
+.pack[aria-pressed="true"]{border-color:var(--cyan);box-shadow:0 0 26px var(--glow)}
+.pack .qty{font-family:var(--f-display);font-weight:900;font-size:2.4rem;line-height:1;font-variant-numeric:tabular-nums}
+.pack .unit{font-size:.85rem;color:var(--muted);margin-bottom:10px;text-transform:uppercase;letter-spacing:.08em;font-weight:700}
+.pack .row{display:flex;justify-content:space-between;gap:8px;font-size:.88rem;color:var(--muted);font-variant-numeric:tabular-nums}
+.pack .total{display:flex;justify-content:center;align-items:center;border-top:1px dashed var(--line);margin-top:8px;padding-top:10px}
+.pack .total b{font-family:var(--f-display);font-weight:900;font-size:1.45rem;color:var(--cyan);font-variant-numeric:tabular-nums}
+.tag{position:absolute;top:-12px;left:16px;background:var(--red);color:#fff;font-size:.7rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:4px 10px;border-radius:99px}
+.check{position:absolute;top:14px;right:14px;width:24px;height:24px;border-radius:50%;border:2px solid var(--line);display:grid;place-items:center;font-size:.8rem;color:transparent}
+.pack[aria-pressed="true"] .check{background:var(--cyan);border-color:var(--cyan);color:var(--bg)}
+
+form{display:grid;gap:14px}
+.field{display:grid;gap:6px}
+label{font-weight:700;font-size:.95rem}
+.hint{font-size:.84rem;color:var(--muted)}
+input{font:inherit;font-size:1rem;padding:14px;border-radius:12px;border:1.5px solid var(--line);background:var(--bg);color:var(--ink);width:100%}
+input::placeholder{color:#6f84b8}
+input:focus{outline:none;border-color:var(--cyan);box-shadow:0 0 0 3px rgba(41,211,255,.2)}
+.err{color:#ff7a8a;font-size:.88rem;font-weight:700}
+.btn{font:inherit;font-family:var(--f-display);font-weight:900;font-size:1.1rem;border:0;border-radius:99px;padding:16px 24px;cursor:pointer;display:inline-flex;justify-content:center;align-items:center;gap:10px;text-decoration:none;letter-spacing:.02em}
+.btn:focus-visible{outline:3px solid #fff;outline-offset:3px}
+.btn-main{background:linear-gradient(180deg,#3f8bff,var(--blue));color:#fff;box-shadow:0 0 24px var(--glow),inset 0 1px 0 rgba(255,255,255,.35);text-transform:uppercase}
+.btn-main:hover{filter:brightness(1.1)}
+.btn-main svg{width:24px;height:24px}
+.btn-wa{background:var(--wa);color:#fff}
+.btn-ghost{background:transparent;color:var(--ink);border:1.5px solid var(--line)}
+
+.pay{background:linear-gradient(180deg,var(--surface2),var(--surface));border:1px solid var(--line);border-radius:18px;padding:22px;display:grid;gap:18px}
+.payrow{display:grid;grid-template-columns:auto minmax(0,1fr);gap:22px;align-items:center}
+@media (max-width:620px){.payrow{grid-template-columns:minmax(0,1fr);justify-items:center;text-align:center}}
+#qr{background:#fff;padding:12px;border-radius:14px;width:224px;height:224px;max-width:100%;box-shadow:0 0 28px var(--glow)}
+#qr img,#qr canvas{width:200px!important;height:200px!important;max-width:100%}
+.amount{font-family:var(--f-display);font-weight:900;font-size:2.5rem;color:var(--cyan);font-variant-numeric:tabular-nums;line-height:1}
+.code{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:.78rem;background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:12px;word-break:break-all;max-height:110px;overflow:auto;user-select:all;color:var(--muted)}
+ol.how{margin:0;padding-left:20px;display:grid;gap:6px;color:var(--muted);font-size:.93rem;text-align:left}
+.btns{display:flex;flex-wrap:wrap;gap:10px}
+.btns .btn{flex:1 1 220px;font-size:1rem}
+
+aside.summary{position:sticky;top:calc(env(safe-area-inset-top,0px) + 16px);background:linear-gradient(180deg,var(--surface2),var(--surface));border:2px solid var(--cyan);box-shadow:0 0 26px var(--glow);border-radius:18px;padding:22px;display:grid;gap:12px}
+aside.summary h3{font-family:var(--f-display);font-weight:900;margin:0;font-size:1.15rem}
+.sumline{display:flex;justify-content:space-between;gap:10px;font-size:.93rem;font-variant-numeric:tabular-nums}
+.sumline span:first-child{color:var(--muted)}
+.sumline span:last-child{text-align:right;min-width:0;overflow-wrap:anywhere;font-weight:700}
+.sumtotal{border-top:1px solid var(--line);padding-top:12px;display:flex;justify-content:space-between;align-items:baseline}
+.sumtotal b{font-family:var(--f-display);font-weight:900;font-size:1.9rem;color:var(--cyan);font-variant-numeric:tabular-nums}
+.sumnote{font-size:.8rem;color:var(--muted)}
+
+.faq{display:grid;gap:10px;padding-block:20px 10px;max-width:760px}
+details{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 16px}
+summary{font-weight:700;cursor:pointer}
+details p{color:var(--muted);margin:8px 0 0}
+
+.closing{display:flex;align-items:center;justify-content:center;gap:18px;flex-wrap:wrap;padding-block:40px 10px;text-align:center}
+.closing svg{width:84px;height:84px}
+.closing p{font-family:var(--f-script);font-size:clamp(1.6rem,4.5vw,2.3rem);line-height:1.15;margin:0;transform:rotate(-3deg)}
+footer{color:var(--muted);font-size:.85rem;padding-block:24px;border-top:1px solid var(--line);margin-top:30px;display:flex;flex-wrap:wrap;gap:6px 18px;justify-content:space-between}
+
+.float-wa{position:fixed;right:16px;bottom:calc(16px + env(safe-area-inset-bottom,0px));background:var(--wa);color:#fff;border-radius:99px;padding:12px 18px;font-weight:800;text-decoration:none;display:flex;align-items:center;gap:8px;box-shadow:0 8px 24px rgba(0,0,0,.4);z-index:5}
+.float-wa svg{width:20px;height:20px}
+.toast{position:fixed;left:50%;bottom:calc(84px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:#fff;color:var(--bg);padding:10px 16px;border-radius:10px;font-weight:700;font-size:.9rem;z-index:6}
+@media (prefers-reduced-motion:reduce){*,*::before{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+
+<!-- Alvo reutilizável -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <radialGradient id="gRed" cx="40%" cy="35%" r="70%"><stop offset="0" stop-color="#ff5468"/><stop offset="1" stop-color="#c3142c"/></radialGradient>
+    <radialGradient id="gWhite" cx="40%" cy="35%" r="70%"><stop offset="0" stop-color="#ffffff"/><stop offset="1" stop-color="#dfe6f3"/></radialGradient>
+    <linearGradient id="gShaft" x1="0" y1="1" x2="1" y2="0"><stop offset="0" stop-color="#1e6bff"/><stop offset="1" stop-color="#29d3ff"/></linearGradient>
+    <symbol id="target" viewBox="0 0 200 200">
+      <circle cx="100" cy="100" r="92" fill="url(#gRed)"/>
+      <circle cx="100" cy="100" r="74" fill="url(#gWhite)"/>
+      <circle cx="100" cy="100" r="56" fill="url(#gRed)"/>
+      <circle cx="100" cy="100" r="38" fill="url(#gWhite)"/>
+      <circle cx="100" cy="100" r="20" fill="url(#gRed)"/>
+    </symbol>
+    <symbol id="arrowShape" viewBox="0 0 200 200">
+      <line x1="100" y1="100" x2="178" y2="22" stroke="url(#gShaft)" stroke-width="7" stroke-linecap="round"/>
+      <path d="M100 100 l14 -3 l-11 14 z" fill="#1e6bff"/>
+      <path d="M166 34 l6 -30 l14 6 l-8 24 z M166 34 l30 -6 l-6 14 l-24 8 z" fill="#29d3ff"/>
+    </symbol>
+  </defs>
+</svg>
+
+<div class="wrap">
+  <header class="top">
+    <div class="brand"><svg viewBox="0 0 200 200" aria-hidden="true"><use href="#target"/><use href="#arrowShape"/></svg>Impulso Seguidores</div>
+  </header>
+
+  <div class="hero">
+    <div>
+      <h1><span class="l1">Seu Instagram no</span><span class="l2">Próximo Nível</span></h1>
+      <span class="script">Dê um gás no seu perfil. <svg class="verified" viewBox="0 0 24 24" role="img" aria-label="verificado"><polygon points="12.00,1.00 14.41,3.02 17.50,2.47 18.58,5.42 21.53,6.50 20.98,9.59 23.00,12.00 20.98,14.41 21.53,17.50 18.58,18.58 17.50,21.53 14.41,20.98 12.00,23.00 9.59,20.98 6.50,21.53 5.42,18.58 2.47,17.50 3.02,14.41 1.00,12.00 3.02,9.59 2.47,6.50 5.42,5.42 6.50,2.47 9.59,3.02" fill="#1d9bf0" stroke="#1d9bf0" stroke-width="1.6" stroke-linejoin="round"/><path d="m7.6 12.3 3 3 5.8-6.2" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      <p class="lead">Escolha o pacote, informe seu @ e pague no PIX pelo QR code. Não pedimos sua senha do Instagram.</p>
+    </div>
+    <div class="target-box" aria-hidden="true">
+      <svg viewBox="0 0 200 200">
+        <g id="rings"><use href="#target"/></g>
+        <g id="arrow"><use href="#arrowShape"/></g>
+      </svg>
+      <span class="badge1k">+1K</span>
+    </div>
+  </div>
+
+  <div class="priceband">
+    <div class="pb-qty"><b>1 Mil</b><span>SEGUIDORES</span></div>
+    <div class="pb-price"><small>APENAS</small><div class="val"><i>R$</i><b>89</b><sup>,00</sup></div></div>
+  </div>
+  <div style="display:flex;justify-content:center">
+    <a class="btn btn-main" href="#passo-pacote" style="min-width:min(100%,420px)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 4h2l2.4 11h11l2-8H6.2"/><circle cx="9" cy="19.5" r="1.4"/><circle cx="17" cy="19.5" r="1.4"/></svg>
+      Compre agora ›
+    </a>
+  </div>
+
+  <div class="trust">
+    <div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M12 2.5 4 5.5v6c0 5 3.4 8.6 8 10 4.6-1.4 8-5 8-10v-6z"/><path d="m8.5 12 2.5 2.5 4.5-5" stroke-linecap="round"/></svg>Seguro e<br>confiável</div>
+    <div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg>Entrega<br>rápida</div>
+    <div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 20v-5M10 20v-8M15 20v-6M20 20V9"/><path d="M4 11 10 6l4 3 6-6M16 3h4v4"/></svg>Mais<br>engajamento</div>
+  </div>
+
+  <div class="grid">
+    <main>
+      <section class="step" id="passo-pacote">
+        <div class="stephead"><span class="stepnum">PASSO 1/3</span><h2>Escolha a quantidade</h2></div>
+        <div class="packs" id="packs" role="group" aria-label="Pacotes de seguidores"></div>
+      </section>
+
+      <section class="step" id="passo-dados">
+        <div class="stephead"><span class="stepnum">PASSO 2/3</span><h2>Seus dados</h2></div>
+        <form id="form" novalidate>
+          <div class="field">
+            <label for="nome">Nome completo</label>
+            <input id="nome" name="nome" autocomplete="name" placeholder="Ex.: Mariana Souza" required>
+          </div>
+          <div class="field">
+            <label for="insta">Link ou @ do Instagram</label>
+            <input id="insta" name="insta" autocomplete="off" placeholder="instagram.com/seuperfil ou @seuperfil" required>
+            <span class="hint">O perfil precisa estar público durante a entrega.</span>
+          </div>
+          <div class="field">
+            <label for="fone">Seu WhatsApp (opcional)</label>
+            <input id="fone" name="fone" type="tel" autocomplete="tel" placeholder="(11) 99999-9999">
+          </div>
+          <div class="err" id="err" hidden></div>
+          <button class="btn btn-main" type="submit">Gerar PIX de <span id="btnValor">R$ 89,00</span> ›</button>
+        </form>
+      </section>
+
+      <section class="step" id="passo-pix" hidden>
+        <div class="stephead"><span class="stepnum">PASSO 3/3</span><h2>Pague com PIX</h2></div>
+        <div class="pay">
+          <div class="payrow">
+            <div id="qr" aria-label="QR code PIX"></div>
+            <div style="display:grid;gap:10px;min-width:0">
+              <span class="hint">Valor a pagar</span>
+              <div class="amount" id="payValor">R$ 89,00</div>
+              <span class="hint" id="payDesc"></span>
+              <span class="hint">Recebedor: <b>Air Simon Seabra</b> · Nubank</span>
+              <ol class="how">
+                <li>Abra o app do seu banco e escolha PIX.</li>
+                <li>Leia o QR code ou use o PIX copia e cola.</li>
+                <li>Envie o comprovante pelo WhatsApp para liberar o pedido.</li>
+              </ol>
+            </div>
+          </div>
+          <div class="field">
+            <label for="pixcode">PIX copia e cola</label>
+            <div class="code" id="pixcode" tabindex="0"></div>
+          </div>
+          <div class="btns">
+            <button class="btn btn-ghost" id="copiar" type="button">Copiar código PIX</button>
+            <a class="btn btn-wa" id="enviarWa" target="_blank" rel="noopener" href="https://wa.me/5511981468678">Enviar comprovante no WhatsApp</a>
+          </div>
+          <span class="hint">Se o botão não abrir, toque no botão verde do WhatsApp no canto da tela e informe o número do pedido <b id="pedidoId"></b>.</span>
+        </div>
+      </section>
+    </main>
+
+    <aside class="summary" aria-live="polite">
+      <h3>Resumo do pedido</h3>
+      <div class="sumline"><span>Pacote</span><span id="sQtd">1.000 seguidores</span></div>
+      <div class="sumline"><span>Preço por mil</span><span id="sMil">R$ 89,00</span></div>
+      <div class="sumline"><span>Perfil</span><span id="sPerfil">—</span></div>
+      <div class="sumtotal"><span>Total</span><b id="sTotal">R$ 89,00</b></div>
+      <div class="sumnote">Pagamento único via PIX. Sem mensalidade.</div>
+    </aside>
+  </div>
+
+  <div class="faq">
+    <h2>Dúvidas frequentes</h2>
+    <details><summary>Vocês pedem minha senha?</summary><p>Não. Precisamos apenas do link ou @ do seu perfil público.</p></details>
+    <details><summary>Quando começa a entrega?</summary><p>Depois que confirmamos o seu PIX pelo comprovante enviado no WhatsApp.</p></details>
+    <details><summary>Posso pagar de outra forma?</summary><p>Fale com a gente pelo botão do WhatsApp e combinamos.</p></details>
+  </div>
+
+  <div class="closing">
+    <svg viewBox="0 0 200 200" aria-hidden="true"><use href="#target"/><use href="#arrowShape"/></svg>
+    <p>Mais seguidores.<br>Mais oportunidades.</p>
+  </div>
+
+  <footer><span>Impulso Seguidores</span><span>Atendimento pelo WhatsApp</span></footer>
+</div>
+
+<a class="float-wa" href="https://wa.me/5511981468678?text=Ol%C3%A1!%20Quero%20saber%20mais%20sobre%20os%20pacotes%20de%20seguidores." target="_blank" rel="noopener" aria-label="Falar no WhatsApp">
+  <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.2-.4.2-.4.7-1.3.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2 5.2 5.2 0 0 0 1.1 2.7 11.8 11.8 0 0 0 4.5 4c1.7.7 2.3.8 3.2.6.5-.1 1.5-.6 1.7-1.2.2-.6.2-1.1.1-1.2l-.5-.3z"/></svg>
+  WhatsApp
+</a>
+<div class="toast" id="toast" hidden></div>
+
+<script>
+/* ===== CONFIGURAÇÃO — ajuste aqui ===== */
+const CONFIG = {
+  whatsapp: "5511981468678",
+  pixChave: "53422570853",      // sua chave PIX (celular, CPF, CNPJ, e-mail ou aleatória)
+  pixNome: "AIR SIMON SEABRA",    // nome do recebedor (até 25 letras, sem acento)
+  pixCidade: "SAO PAULO"            // cidade do recebedor (até 15 letras, sem acento)
+};
+const PACOTES = [
+  { qtd: 100,  total: 29.00 },
+  { qtd: 500,  total: 59.00 },
+  { qtd: 1000, total: 89.00, destaque: "Mais escolhido" },
+  { qtd: 5000, total: 249.00, destaque: "Melhor preço" }
+];
+/* ====================================== */
+
+const brl = v => v.toLocaleString("pt-BR",{style:"currency",currency:"BRL"});
+const num = v => v.toLocaleString("pt-BR");
+let sel = 2;
+
+const packsEl = document.getElementById("packs");
+PACOTES.forEach((p,i)=>{
+  const b = document.createElement("button");
+  b.type="button"; b.className="pack"; b.id="pack-"+p.qtd;
+  b.innerHTML = (p.destaque?`<span class="tag">${p.destaque}</span>`:"")+
+    `<span class="check">✓</span>
+     <span class="qty">${num(p.qtd)}</span><span class="unit">seguidores</span>
+     <span class="row"><span>Equivale a</span><span>${brl(p.total/p.qtd*1000)} por mil</span></span>
+     <span class="total"><span>Total do pedido</span><b>${brl(p.total)}</b></span>`;
+  b.addEventListener("click",()=>{ sel=i; render(); const px=document.getElementById("passo-pix"); if(!px.hidden){ px.hidden=true; pedido=""; document.getElementById("passo-dados").scrollIntoView({behavior:"smooth"}); } });
+  packsEl.appendChild(b);
+});
+
+function perfilDe(v){
+  v=(v||"").trim();
+  const m=v.match(/instagram\.com\/([A-Za-z0-9._]+)/i);
+  let u = m?m[1]:v.replace(/^@/,"");
+  return /^[A-Za-z0-9._]{1,30}$/.test(u)?u:"";
+}
+function render(){
+  const p=PACOTES[sel];
+  [...packsEl.children].forEach((b,i)=>b.setAttribute("aria-pressed", i===sel));
+  document.getElementById("sQtd").textContent=num(p.qtd)+" seguidores";
+  document.getElementById("sMil").textContent=brl(p.total/p.qtd*1000);
+  document.getElementById("sTotal").textContent=brl(p.total);
+  document.getElementById("btnValor").textContent=brl(p.total);
+  const u=perfilDe(document.getElementById("insta").value);
+  document.getElementById("sPerfil").textContent=u?"@"+u:"—";
+}
+document.getElementById("insta").addEventListener("input",render);
+
+/* --- PIX BR Code (padrão EMV do Banco Central) --- */
+const f=(id,v)=>id+String(v.length).padStart(2,"0")+v;
+function crc16(s){let c=0xFFFF;for(let i=0;i<s.length;i++){c^=s.charCodeAt(i)<<8;for(let j=0;j<8;j++)c=(c&0x8000)?((c<<1)^0x1021):(c<<1);c&=0xFFFF}return c.toString(16).toUpperCase().padStart(4,"0")}
+const limpa=(s,n)=>s.normalize("NFD").replace(/[̀-ͯ]/g,"").replace(/[^A-Za-z0-9 ]/g,"").toUpperCase().slice(0,n);
+function brcode(valor,txid){
+  const conta=f("00","br.gov.bcb.pix")+f("01",CONFIG.pixChave);
+  let p=f("00","01")+f("26",conta)+f("52","0000")+f("53","986")+f("54",valor.toFixed(2))+
+        f("58","BR")+f("59",limpa(CONFIG.pixNome,25))+f("60",limpa(CONFIG.pixCidade,15))+f("62",f("05",txid))+"6304";
+  return p+crc16(p);
+}
+
+let pedido="";
+function gerarPix(){
+  const p=PACOTES[sel];
+  const nome=document.getElementById("nome").value.trim();
+  const u=perfilDe(document.getElementById("insta").value);
+  const fone=document.getElementById("fone").value.trim();
+  if(!pedido) pedido="PED"+Date.now().toString(36).toUpperCase().slice(-7);
+  const code=brcode(p.total,pedido);
+  document.getElementById("pixcode").textContent=code;
+  document.getElementById("payValor").textContent=brl(p.total);
+  document.getElementById("payDesc").textContent=`${num(p.qtd)} seguidores para @${u} · Pedido ${pedido}`;
+  document.getElementById("pedidoId").textContent=pedido;
+  const qr=document.getElementById("qr"); qr.innerHTML="";
+  if(window.QRCode){ new QRCode(qr,{text:code,width:200,height:200,correctLevel:QRCode.CorrectLevel.M}); }
+  else { qr.textContent="Use o PIX copia e cola abaixo."; }
+  const msg=`Olá! Fiz um pedido pela página.\n\nPedido: ${pedido}\nNome: ${nome}\nInstagram: https://instagram.com/${u}\nPacote: ${num(p.qtd)} seguidores\nValor: ${brl(p.total)}${fone?"\nMeu WhatsApp: "+fone:""}\n\nSegue o comprovante do PIX:`;
+  document.getElementById("enviarWa").href=`https://wa.me/${CONFIG.whatsapp}?text=${encodeURIComponent(msg)}`;
+}
+
+document.getElementById("form").addEventListener("submit",async e=>{
+  e.preventDefault();
+  const err=document.getElementById("err");
+  const nome=document.getElementById("nome").value.trim();
+  const u=perfilDe(document.getElementById("insta").value);
+  if(nome.length<3){err.textContent="Informe seu nome completo.";err.hidden=false;document.getElementById("nome").focus();return}
+  if(!u){err.textContent="Informe um @ ou link válido do Instagram, ex.: instagram.com/seuperfil";err.hidden=false;document.getElementById("insta").focus();return}
+  err.hidden=true;
+  const btn=e.submitter||document.querySelector("#form button[type=submit]");
+  btn.disabled=true; const txt=btn.innerHTML; btn.textContent="Gerando seu pedido…";
+  const p=PACOTES[sel]; pedido="";
+  try{
+    const r=await fetch("/api/pedido",{method:"POST",headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({nome,instagram:u,whatsapp:document.getElementById("fone").value.trim(),qtd:p.qtd})});
+    const j=await r.json().catch(()=>({}));
+    if(r.ok&&j.id) pedido=j.id;
+  }catch(_){/* sem conexão: segue com número local; o pedido chega pelo WhatsApp */}
+  btn.disabled=false; btn.innerHTML=txt;
+  gerarPix();
+  const s=document.getElementById("passo-pix"); s.hidden=false;
+  s.scrollIntoView({behavior: matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth"});
+});
+
+function toast(t){const el=document.getElementById("toast");el.textContent=t;el.hidden=false;clearTimeout(toast._t);toast._t=setTimeout(()=>el.hidden=true,2200)}
+document.getElementById("copiar").addEventListener("click",()=>{
+  const t=document.getElementById("pixcode").textContent;
+  const selec=()=>{const r=document.createRange();r.selectNodeContents(document.getElementById("pixcode"));const s=getSelection();s.removeAllRanges();s.addRange(r);toast("Código selecionado. Copie com Ctrl+C ou segurando o dedo.")};
+  if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(t).then(()=>toast("Código PIX copiado"),selec)}else selec();
+});
+render();
+</script>
+
+</body>
+</html>
