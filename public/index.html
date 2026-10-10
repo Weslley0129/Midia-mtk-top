@@ -436,6 +436,18 @@ document.getElementById("copiar").addEventListener("click",()=>{
   if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(t).then(()=>toast("Código PIX copiado"),selec)}else selec();
 });
 render();
+
+/* --- Contador de acessos (anônimo: sem IP, sem dados pessoais) --- */
+(function(){
+  let sid="";
+  try{ sid=sessionStorage.getItem("sid")||""; }catch(_){}
+  if(!sid){ sid=(Date.now().toString(36)+Math.random().toString(36).slice(2,10)).replace(/[^a-z0-9]/gi,""); try{ sessionStorage.setItem("sid",sid); }catch(_){} }
+  const utm=new URLSearchParams(location.search).get("utm_source")||"";
+  const enviar=tipo=>{ try{ fetch("/api/visita",{method:"POST",headers:{"Content-Type":"application/json"},keepalive:true,body:JSON.stringify({sid,tipo,ref:document.referrer,utm})}).catch(()=>{}); }catch(_){} };
+  enviar("view");
+  setInterval(()=>{ if(document.visibilityState==="visible") enviar("ping"); },25000);
+  document.addEventListener("visibilitychange",()=>{ if(document.visibilityState==="visible") enviar("ping"); });
+})();
 </script>
 
 </body>

@@ -1,5 +1,6 @@
 import { put, list, get } from "@vercel/blob";
 import crypto from "node:crypto";
+import { temRedis, redis, pipe } from "./_redis.js";
 
 // Preços oficiais (o servidor sempre recalcula o valor; não confia no navegador)
 export const PACOTES = { 100: 29.0, 500: 59.0, 1000: 89.0, 5000: 249.0 };
@@ -7,7 +8,15 @@ export const STATUS = ["aguardando", "pago", "em_entrega", "concluido", "cancela
 
 const caminho = (id) => `pedidos/${id}.json`;
 
+// Pedidos ficam no Redis quando ele está conectado; senão, no Blob.
 export async function salvar(pedido) {
+  if (temRedis()) {
+    await pipe([
+      ["SET", `pedido:${pedido.id}`, JSON.stringify(pedido)],
+      ["ZADD", "pedidos", Date.parse(pedido.criadoEm), pedido.id],
+    ]);
+    return;
+  }
   await put(caminho(pedido.id), JSON.stringify(pedido), {
     access: "private",
     contentType: "application/json",
@@ -17,12 +26,22 @@ export async function salvar(pedido) {
 }
 
 export async function ler(id) {
+  if (temRedis()) {
+    const s = await redis("GET", `pedido:${id}`);
+    return s ? JSON.parse(s) : null;
+  }
   const r = await get(caminho(id), { access: "private", useCache: false });
   if (!r || r.statusCode !== 200) return null;
   return JSON.parse(await new Response(r.stream).text());
 }
 
 export async function listarTodos() {
+  if (temRedis()) {
+    const ids = await redis("ZREVRANGE", "pedidos", 0, 999);
+    if (!ids || !ids.length) return [];
+    const vals = await redis("MGET", ...ids.map((i) => `pedido:${i}`));
+    return vals.filter(Boolean).map((s) => JSON.parse(s));
+  }
   const blobs = [];
   let cursor;
   do {

@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex,nofollow">
 <title>Painel de Vendas</title>
+<link rel="icon" href="/favicon.ico?v=2" sizes="any">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@800;900&family=Nunito+Sans:opsz,wght@6..12,400;6..12,600;6..12,700&display=swap">
 <style>
@@ -75,6 +76,32 @@ select.status{background:var(--bg);border:1px solid var(--line);border-radius:8p
 .empty{padding:40px 20px;text-align:center;color:var(--muted)}
 .empty b{display:block;color:var(--ink);font-family:var(--f-display);font-size:1.2rem;margin-bottom:4px}
 .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#fff;color:var(--bg);padding:10px 16px;border-radius:10px;font-weight:700;z-index:9}
+h2.sec,.ac-head h2{font-family:var(--f-display);font-weight:900;font-size:1.2rem;margin:0}
+h2.sec{margin:26px 0 12px}
+.ac-head{display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap;margin-bottom:12px}
+.ac-off{background:var(--surface);border:1px dashed var(--line);border-radius:14px;padding:16px;color:var(--muted)}
+.kpi.live{border-color:#29e0a0;box-shadow:0 0 22px rgba(41,224,160,.25)}
+.kpi.live b{display:flex;align-items:center;gap:10px;color:#29e0a0}
+.kpi .bignum{font-style:normal;color:inherit;font-size:inherit}
+.dot{width:12px;height:12px;border-radius:50%;background:#29e0a0;box-shadow:0 0 0 0 rgba(41,224,160,.6);animation:ping 1.6s ease-out infinite;flex:none}
+@keyframes ping{0%{box-shadow:0 0 0 0 rgba(41,224,160,.6)}100%{box-shadow:0 0 0 12px rgba(41,224,160,0)}}
+.ac-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+@media (max-width:860px){.ac-grid{grid-template-columns:minmax(0,1fr)}}
+.panel{background:linear-gradient(180deg,var(--surface2),var(--surface));border:1px solid var(--line);border-radius:14px;padding:16px;min-width:0}
+.panel h3{margin:0 0 10px;font-size:.78rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:700}
+.chart svg{width:100%;height:auto;display:block}
+.chart text{fill:var(--muted);font-size:10px;font-family:var(--f-body)}
+.bars{display:grid;gap:8px}
+.bar{display:grid;grid-template-columns:96px minmax(0,1fr) 40px;gap:8px;align-items:center;font-size:.88rem}
+.bar span:first-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-transform:capitalize}
+.bar i{display:block;height:10px;border-radius:5px;background:var(--cyan);min-width:3px}
+.bar b{text-align:right;font-variant-numeric:tabular-nums}
+.recentes{list-style:none;margin:0;padding:0;display:grid;gap:6px;max-height:260px;overflow:auto}
+.recentes li{display:flex;justify-content:space-between;gap:10px;font-size:.86rem;padding:6px 0;border-bottom:1px solid var(--line)}
+.recentes li:last-child{border-bottom:0}
+.recentes .when{color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap}
+.recentes .tag{font-size:.72rem;border:1px solid var(--line);border-radius:99px;padding:1px 8px;color:var(--muted);text-transform:capitalize;white-space:nowrap}
+.muted{color:var(--muted)}
 .new{animation:flash 2.5s ease-out}
 @keyframes flash{0%{background:rgba(41,211,255,.25)}100%{background:transparent}}
 @media (prefers-reduced-motion:reduce){.new{animation:none}}
@@ -102,6 +129,43 @@ select.status{background:var(--bg);border:1px solid var(--line);border-radius:8p
       </div>
     </header>
 
+    <section class="acessos" id="acessos" aria-label="Acessos ao site">
+      <div class="ac-head">
+        <h2>Acessos ao site</h2>
+        <span class="upd" id="acUpd">Ao vivo · atualiza a cada 10 s</span>
+      </div>
+      <div class="ac-off" id="acOff" hidden>O contador de acessos começa a funcionar assim que o banco de acessos (Redis) for conectado ao projeto na Vercel.</div>
+      <div id="acOn">
+        <div class="kpis">
+          <div class="kpi live"><span>Online agora</span><b><i class="dot" aria-hidden="true"></i><em id="aOnline" class="bignum">0</em></b><em>pessoas com o site aberto</em></div>
+          <div class="kpi"><span>Visitas hoje</span><b id="aVis">0</b><em id="aVisSub">páginas abertas</em></div>
+          <div class="kpi"><span>Visitantes únicos hoje</span><b id="aUni">0</b><em id="aUniSub">pessoas diferentes</em></div>
+          <div class="kpi"><span>Conversão hoje</span><b id="aConv">0%</b><em id="aConvSub">pedidos ÷ visitantes</em></div>
+        </div>
+        <div class="ac-grid">
+          <div class="panel">
+            <h3>Visitas por hora · hoje</h3>
+            <div class="chart" id="chHoras"></div>
+          </div>
+          <div class="panel">
+            <h3>Últimos 7 dias</h3>
+            <div class="chart" id="chSemana"></div>
+          </div>
+          <div class="panel">
+            <h3>De onde vêm · hoje</h3>
+            <div id="lsOrigem" class="bars"></div>
+            <h3 style="margin-top:14px">Dispositivo · hoje</h3>
+            <div id="lsDisp" class="bars"></div>
+          </div>
+          <div class="panel">
+            <h3>Últimos acessos</h3>
+            <ul id="lsRecentes" class="recentes"></ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <h2 class="sec">Vendas</h2>
     <div class="kpis">
       <div class="kpi hl"><span>Faturamento confirmado</span><b id="kFat">R$ 0,00</b><em id="kFatQ">0 vendas pagas</em></div>
       <div class="kpi"><span>Hoje</span><b id="kHoje">R$ 0,00</b><em id="kHojeQ">0 vendas pagas hoje</em></div>
@@ -159,6 +223,7 @@ async function carregar(){
     pedidos = j.pedidos;
     render(primeiraCarga ? new Set() : new Set(novos.map(p=>p.id)));
     pedidos.forEach(p=>vistos.add(p.id));
+    renderAcessos();
     primeiraCarga = false;
     $("upd").textContent = "Atualizado às " + new Date().toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"});
   }catch(e){ if(e.message!=="401") $("upd").textContent = "Falha ao atualizar: "+e.message }
@@ -236,9 +301,58 @@ function csv(){
   setTimeout(()=>URL.revokeObjectURL(url),1000);
 }
 
-let timer;
-function entrar(){ $("loginBox").hidden=true; $("app").hidden=false; carregar(); clearInterval(timer); timer=setInterval(carregar,30000) }
-function sair(msg){ senha=""; guardarSenha(""); clearInterval(timer); $("app").hidden=true; $("loginBox").hidden=false; vistos.clear(); primeiraCarga=true;
+/* ---------- Acessos ---------- */
+let acessos=null;
+const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+function barras(valores, rotulos, destaque){
+  const W=520,H=150,pl=26,pb=20,pt=12,max=Math.max(1,...valores);
+  const passo=Math.max(1,Math.ceil(max/4)), topo=passo*Math.ceil(max/passo);
+  const bw=(W-pl)/valores.length;
+  let g="";
+  for(let v=0; v<=topo; v+=passo){ const y=pt+(H-pt-pb)*(1-v/topo);
+    g+=`<line x1="${pl}" x2="${W}" y1="${y}" y2="${y}" stroke="rgba(169,187,230,.15)"/><text x="${pl-6}" y="${y+3}" text-anchor="end">${v}</text>`; }
+  valores.forEach((v,i)=>{ const h=(H-pt-pb)*v/topo, x=pl+i*bw+bw*.15, y=H-pb-h;
+    const cor=i===destaque?"#29e0a0":"#29d3ff";
+    g+=`<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${(bw*.7).toFixed(1)}" height="${Math.max(h,v?2:0).toFixed(1)}" rx="2" fill="${cor}"><title>${esc(rotulos[i])}: ${v}</title></rect>`;
+    if(rotulos.length<=8 || i%3===0) g+=`<text x="${(x+bw*.35).toFixed(1)}" y="${H-5}" text-anchor="middle">${esc(rotulos[i])}</text>`; });
+  return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Gráfico de barras">${g}</svg>`;
+}
+function listaBarras(obj){
+  const e=Object.entries(obj||{}).sort((a,b)=>b[1]-a[1]).slice(0,6);
+  if(!e.length) return '<div class="muted">Sem acessos ainda hoje.</div>';
+  const max=e[0][1];
+  return e.map(([k,v])=>`<div class="bar"><span>${esc(k)}</span><i style="width:${Math.round(v/max*100)}%"></i><b>${v}</b></div>`).join("");
+}
+function tempoRel(t){ const s=Math.round((Date.now()-t)/1000); if(s<60) return "agora"; if(s<3600) return Math.floor(s/60)+" min"; if(s<86400) return Math.floor(s/3600)+" h"; return new Date(t).toLocaleDateString("pt-BR"); }
+function renderAcessos(){
+  const a=acessos; if(!a) return;
+  $("acOff").hidden=a.ativo; $("acOn").hidden=!a.ativo; if(!a.ativo) return;
+  $("aOnline").textContent=a.online;
+  $("aVis").textContent=num(a.hoje.visitas);
+  $("aUni").textContent=num(a.hoje.unicos);
+  const hojeStr=new Date().toDateString();
+  const pedHoje=pedidos.filter(p=>new Date(p.criadoEm).toDateString()===hojeStr).length;
+  $("aConv").textContent=(a.hoje.unicos?Math.round(pedHoje/a.hoje.unicos*1000)/10:0).toLocaleString("pt-BR")+"%";
+  $("aConvSub").textContent=`${pedHoje} ${pedHoje===1?"pedido":"pedidos"} ÷ ${a.hoje.unicos} visitantes`;
+  $("chHoras").innerHTML=barras(a.horas, a.horas.map((_,h)=>h+"h"), a.horaAtual);
+  const sem=["dom","seg","ter","qua","qui","sex","sáb"];
+  $("chSemana").innerHTML=barras(a.semana.map(d=>d.unicos), a.semana.map(d=>sem[new Date(d.dia+"T12:00:00").getDay()]), 6);
+  $("lsOrigem").innerHTML=listaBarras(a.origens);
+  $("lsDisp").innerHTML=listaBarras(a.dispositivos);
+  $("lsRecentes").innerHTML=a.recentes.length? a.recentes.map(r=>{
+    const lugar=[r.cidade,r.uf].filter(Boolean).join(" - ")||r.pais||"Local desconhecido";
+    return `<li><span>${esc(lugar)} <span class="tag">${esc(r.origem)}</span> <span class="tag">${esc(r.disp)}</span></span><span class="when">${tempoRel(r.t)}</span></li>`;
+  }).join("") : '<li class="muted">Nenhum acesso registrado ainda.</li>';
+}
+async function carregarAcessos(){
+  try{ acessos=await api("/api/admin/acessos"); renderAcessos();
+    $("acUpd").textContent="Ao vivo · "+new Date().toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit",second:"2-digit"});
+  }catch(e){ if(e.message!=="401") $("acUpd").textContent="Falha ao atualizar acessos"; }
+}
+
+let timer, timerAc;
+function entrar(){ $("loginBox").hidden=true; $("app").hidden=false; carregar(); carregarAcessos(); clearInterval(timer); clearInterval(timerAc); timer=setInterval(carregar,30000); timerAc=setInterval(carregarAcessos,10000) }
+function sair(msg){ senha=""; guardarSenha(""); clearInterval(timer); clearInterval(timerAc); $("app").hidden=true; $("loginBox").hidden=false; vistos.clear(); primeiraCarga=true;
   if(msg){ $("loginErr").textContent=msg; $("loginErr").hidden=false } }
 
 $("loginBox").addEventListener("submit", async e=>{
