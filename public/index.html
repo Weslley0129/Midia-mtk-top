@@ -131,6 +131,7 @@ label{font-weight:700;font-size:.95rem}
 input{font:inherit;font-size:1rem;padding:14px;border-radius:12px;border:1.5px solid var(--line);background:var(--bg);color:var(--ink);width:100%}
 input::placeholder{color:#6f84b8}
 input:focus{outline:none;border-color:var(--cyan);box-shadow:0 0 0 3px rgba(41,211,255,.2)}
+.lgpd{margin:0;font-size:.8rem;color:var(--muted);line-height:1.45}
 .err{color:#ff7a8a;font-size:.88rem;font-weight:700}
 .btn{font:inherit;font-family:var(--f-display);font-weight:900;font-size:1.1rem;border:0;border-radius:99px;padding:16px 24px;cursor:pointer;display:inline-flex;justify-content:center;align-items:center;gap:10px;text-decoration:none;letter-spacing:.02em}
 .btn:focus-visible{outline:3px solid #fff;outline-offset:3px}
@@ -259,6 +260,7 @@ footer{color:var(--muted);font-size:.85rem;padding-block:24px;border-top:1px sol
             <label for="fone">Seu WhatsApp (opcional)</label>
             <input id="fone" name="fone" type="tel" autocomplete="tel" placeholder="(11) 99999-9999">
           </div>
+          <p class="lgpd">Ao preencher, você concorda que usemos seu nome, @ e WhatsApp apenas para falar com você sobre este pedido.</p>
           <div class="err" id="err" hidden></div>
           <button class="btn btn-main" type="submit">Gerar PIX de <span id="btnValor">R$ 89,00</span> ›</button>
         </form>
@@ -419,7 +421,7 @@ document.getElementById("form").addEventListener("submit",async e=>{
   const p=PACOTES[sel]; pedido="";
   try{
     const r=await fetch("/api/pedido",{method:"POST",headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({nome,instagram:u,whatsapp:document.getElementById("fone").value.trim(),qtd:p.qtd})});
+      body:JSON.stringify({sid:pegarSid(),nome,instagram:u,whatsapp:document.getElementById("fone").value.trim(),qtd:p.qtd})});
     const j=await r.json().catch(()=>({}));
     if(r.ok&&j.id) pedido=j.id;
   }catch(_){/* sem conexão: segue com número local; o pedido chega pelo WhatsApp */}
@@ -437,11 +439,35 @@ document.getElementById("copiar").addEventListener("click",()=>{
 });
 render();
 
+/* --- Identificador anônimo da visita (gerado no navegador) --- */
+let _sid="";
+function pegarSid(){
+  if(_sid) return _sid;
+  try{ _sid=sessionStorage.getItem("sid")||""; }catch(_){}
+  if(!_sid){ _sid=(Date.now().toString(36)+Math.random().toString(36).slice(2,10)).replace(/[^a-z0-9]/gi,""); try{ sessionStorage.setItem("sid",_sid); }catch(_){} }
+  return _sid;
+}
+
+/* --- Carrinho abandonado: salva o que foi preenchido antes de gerar o PIX --- */
+(function(){
+  let t, ultimo="";
+  function salvarRascunho(){
+    const nome=document.getElementById("nome").value.trim();
+    const u=perfilDe(document.getElementById("insta").value);
+    if(nome.length<3 || !u) return;
+    const dados={sid:pegarSid(),nome,instagram:u,whatsapp:document.getElementById("fone").value.trim(),qtd:PACOTES[sel].qtd};
+    const j=JSON.stringify(dados); if(j===ultimo) return; ultimo=j;
+    try{ fetch("/api/rascunho",{method:"POST",headers:{"Content-Type":"application/json"},keepalive:true,body:j}).catch(()=>{}); }catch(_){}
+  }
+  const agendar=()=>{ clearTimeout(t); t=setTimeout(salvarRascunho,1500); };
+  ["nome","insta","fone"].forEach(id=>{ const el=document.getElementById(id); el.addEventListener("input",agendar); el.addEventListener("blur",salvarRascunho); });
+  packsEl.addEventListener("click",agendar);
+  document.addEventListener("visibilitychange",()=>{ if(document.visibilityState==="hidden") salvarRascunho(); });
+})();
+
 /* --- Contador de acessos (anônimo: sem IP, sem dados pessoais) --- */
 (function(){
-  let sid="";
-  try{ sid=sessionStorage.getItem("sid")||""; }catch(_){}
-  if(!sid){ sid=(Date.now().toString(36)+Math.random().toString(36).slice(2,10)).replace(/[^a-z0-9]/gi,""); try{ sessionStorage.setItem("sid",sid); }catch(_){} }
+  const sid=pegarSid();
   const utm=new URLSearchParams(location.search).get("utm_source")||"";
   const enviar=tipo=>{ try{ fetch("/api/visita",{method:"POST",headers:{"Content-Type":"application/json"},keepalive:true,body:JSON.stringify({sid,tipo,ref:document.referrer,utm})}).catch(()=>{}); }catch(_){} };
   enviar("view");

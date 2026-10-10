@@ -1,4 +1,5 @@
 import { PACOTES, salvar, novoId, limpar } from "./_lib.js";
+import { temRedis, pipe } from "./_redis.js";
 
 export default async function handler(req, res) {
   if (req.method !== "POST") return res.status(405).json({ erro: "Use POST" });
@@ -24,6 +25,15 @@ export default async function handler(req, res) {
       historico: [{ status: "aguardando", em: new Date().toISOString() }],
     };
     await salvar(pedido);
+    // Quem gerou o PIX deixa de ser carrinho abandonado
+    const sid = String(b.sid || "");
+    if (temRedis() && /^[a-z0-9]{8,32}$/i.test(sid)) {
+      try {
+        await pipe([["DEL", `rascunho:${sid}`], ["ZREM", "rascunhos", sid], ["SET", `convertido:${sid}`, "1", "EX", 60 * 60 * 24 * 15]]);
+      } catch (e) {
+        console.error("limpar rascunho", e);
+      }
+    }
     return res.status(201).json({ id: pedido.id, valor: pedido.valor });
   } catch (e) {
     console.error("erro ao salvar pedido", e);

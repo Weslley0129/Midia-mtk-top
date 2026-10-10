@@ -112,6 +112,24 @@ h2.sec{margin:26px 0 12px}
 .new{animation:flash 2.5s ease-out}
 @keyframes flash{0%{background:rgba(41,211,255,.25)}100%{background:transparent}}
 @media (prefers-reduced-motion:reduce){.new{animation:none}}
+/* Carrinhos abandonados */
+.abandonos{margin-top:22px}
+.ab-sub{margin:0 0 12px;color:var(--muted);font-size:.9rem}
+.ab-lista{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px}
+.ab{background:linear-gradient(180deg,var(--surface2),var(--surface));border:1px solid var(--line);border-radius:14px;padding:14px;display:grid;gap:10px;min-width:0}
+.ab.vivo{border-color:#f5b83d}
+.ab-top{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+.ab-top b{display:block;font-size:1rem;overflow-wrap:anywhere}
+.ab-top a{color:var(--cyan);text-decoration:none;font-size:.9rem}
+.ab-when{color:var(--muted);font-size:.8rem;white-space:nowrap;text-align:right}
+.ab-when .pill{display:inline-block;margin-top:4px;background:rgba(245,184,61,.15);color:#f5b83d;border-radius:99px;padding:1px 8px;font-weight:700}
+.ab-info{display:flex;justify-content:space-between;font-size:.9rem;color:var(--muted)}
+.ab-info b{color:var(--ink);font-variant-numeric:tabular-nums}
+.ab-acoes{display:flex;flex-wrap:wrap;gap:6px}
+.ab-acoes a,.ab-acoes button{flex:1 1 auto;text-align:center;text-decoration:none;font-size:.85rem;padding:8px 10px}
+.btn-ig{background:linear-gradient(90deg,#833ab4,#e1306c);border-color:transparent;color:#fff}
+.btn-wa2{background:#25c45f;border-color:#25c45f;color:#fff}
+.ab-vazio{color:var(--muted);background:var(--surface);border:1px dashed var(--line);border-radius:14px;padding:16px}
 /* App no celular */
 body{padding-top:env(safe-area-inset-top,0px);padding-bottom:calc(60px + env(safe-area-inset-bottom,0px))}
 .lembrar{display:flex;gap:8px;align-items:center;color:var(--muted);font-size:.9rem}
@@ -201,6 +219,18 @@ body{padding-top:env(safe-area-inset-top,0px);padding-bottom:calc(60px + env(saf
           </div>
         </div>
       </div>
+    </section>
+
+    <section class="abandonos" aria-label="Carrinhos abandonados">
+      <div class="ac-head">
+        <h2>Carrinhos abandonados</h2>
+        <div class="chips" id="abChips" role="group" aria-label="Filtrar carrinhos">
+          <button type="button" class="chip" data-ab="pendentes" aria-pressed="true">Para chamar <i id="abQtdP">0</i></button>
+          <button type="button" class="chip" data-ab="contatados" aria-pressed="false">Já chamados <i id="abQtdC">0</i></button>
+        </div>
+      </div>
+      <p class="ab-sub">Pessoas que preencheram nome e @, mas não geraram o PIX. Chame no Instagram ou WhatsApp e ofereça ajuda.</p>
+      <div class="ab-lista" id="abLista"></div>
     </section>
 
     <h2 class="sec">Vendas</h2>
@@ -388,8 +418,51 @@ async function carregarAcessos(){
   }catch(e){ if(e.message!=="401") $("acUpd").textContent="Falha ao atualizar acessos"; }
 }
 
+/* ---------- Carrinhos abandonados ---------- */
+let abandonos=[], abFiltro="pendentes";
+async function carregarAbandonos(){
+  try{ const j=await api("/api/admin/abandonos"); abandonos=j.lista||[]; renderAbandonos(); }catch(e){}
+}
+function renderAbandonos(){
+  const pend=abandonos.filter(a=>!a.contatadoEm), cont=abandonos.filter(a=>a.contatadoEm);
+  $("abQtdP").textContent=pend.length; $("abQtdC").textContent=cont.length;
+  document.querySelectorAll("#abChips [data-ab]").forEach(b=>b.setAttribute("aria-pressed", b.dataset.ab===abFiltro));
+  const lista=abFiltro==="pendentes"?pend:cont, box=$("abLista");
+  if(!lista.length){ box.innerHTML=`<div class="ab-vazio">${abFiltro==="pendentes"?"Ninguém desistiu no meio do pedido por enquanto.":"Nenhum contato marcado como chamado ainda."}</div>`; return; }
+  box.innerHTML=lista.map(a=>{
+    const vivo=Date.now()-a.atualizadoEm<5*60*1000;
+    const primeiro=(a.nome||"").split(" ")[0];
+    const msg=`Oi ${primeiro}! Vi que você começou um pedido${a.qtd?` de ${num(a.qtd)} seguidores`:""} na Impulso Seguidores. Posso te ajudar a finalizar?`;
+    const wa=(a.whatsapp||"").replace(/\D/g,""), waFull=wa&&(wa.length<=11?"55"+wa:wa);
+    return `<div class="ab${vivo?" vivo":""}">
+      <div class="ab-top"><div><b>${esc(a.nome)}</b><a href="https://instagram.com/${encodeURIComponent(a.instagram)}" target="_blank" rel="noopener">@${esc(a.instagram)}</a></div>
+        <div class="ab-when">${tempoRel(a.atualizadoEm)}${vivo?'<br><span class="pill">preenchendo agora</span>':""}</div></div>
+      <div class="ab-info"><span>Pacote</span><b>${a.qtd?num(a.qtd)+" · "+brl(a.valor):"não escolhido"}</b></div>
+      ${a.whatsapp?`<div class="ab-info"><span>WhatsApp</span><b>${esc(a.whatsapp)}</b></div>`:""}
+      <div class="ab-acoes">
+        <a class="btn btn-ig" href="https://ig.me/m/${encodeURIComponent(a.instagram)}" target="_blank" rel="noopener" data-msg="${esc(msg)}">Chamar no Instagram</a>
+        ${waFull?`<a class="btn btn-wa2" href="https://wa.me/${waFull}?text=${encodeURIComponent(msg)}" target="_blank" rel="noopener">WhatsApp</a>`:""}
+      </div>
+      <div class="ab-acoes">
+        ${a.contatadoEm?`<button class="btn" data-acao="reabrir" data-sid="${a.sid}" type="button">Voltar para "chamar"</button>`:`<button class="btn" data-acao="contatado" data-sid="${a.sid}" type="button">Marcar como chamado</button>`}
+        <button class="btn" data-acao="apagar" data-sid="${a.sid}" type="button">Remover</button>
+      </div></div>`;
+  }).join("");
+}
+$("abChips").addEventListener("click",e=>{ const b=e.target.closest("[data-ab]"); if(b){ abFiltro=b.dataset.ab; renderAbandonos(); } });
+$("abLista").addEventListener("click",async e=>{
+  const ig=e.target.closest(".btn-ig");
+  if(ig){ try{ await navigator.clipboard.writeText(ig.dataset.msg); toast("Mensagem copiada: cole na conversa do Instagram"); }catch(_){} return; }
+  const b=e.target.closest("[data-acao]"); if(!b) return;
+  if(b.dataset.acao==="apagar" && b.dataset.confirma!=="1"){ b.dataset.confirma="1"; b.textContent="Toque de novo para remover"; setTimeout(()=>{ if(b.isConnected){ b.dataset.confirma=""; b.textContent="Remover"; } },4000); return; }
+  b.disabled=true;
+  try{ await api("/api/admin/abandonos",{method:"POST",body:JSON.stringify({sid:b.dataset.sid,acao:b.dataset.acao})});
+    toast(b.dataset.acao==="apagar"?"Removido":b.dataset.acao==="contatado"?"Marcado como chamado":"Voltou para a lista"); await carregarAbandonos();
+  }catch(err){ if(err.message!=="401"){ b.disabled=false; toast("Não foi possível salvar: "+err.message); } }
+});
+
 let timer, timerAc;
-function entrar(){ $("loginBox").hidden=true; $("app").hidden=false; carregar(); carregarAcessos(); clearInterval(timer); clearInterval(timerAc); timer=setInterval(carregar,30000); timerAc=setInterval(carregarAcessos,10000) }
+function entrar(){ $("loginBox").hidden=true; $("app").hidden=false; carregar(); carregarAcessos(); carregarAbandonos(); clearInterval(timer); clearInterval(timerAc); timer=setInterval(()=>{ carregar(); carregarAbandonos(); },30000); timerAc=setInterval(carregarAcessos,10000) }
 function sair(msg){ senha=""; guardarSenha(""); clearInterval(timer); clearInterval(timerAc); $("app").hidden=true; $("loginBox").hidden=false; vistos.clear(); primeiraCarga=true;
   if(msg){ $("loginErr").textContent=msg; $("loginErr").hidden=false } }
 
