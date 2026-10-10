@@ -6,6 +6,13 @@
 <meta name="robots" content="noindex,nofollow">
 <title>Painel de Vendas</title>
 <link rel="icon" href="/favicon.ico?v=2" sizes="any">
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+<meta name="theme-color" content="#050d24">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Impulso Painel">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@800;900&family=Nunito+Sans:opsz,wght@6..12,400;6..12,600;6..12,700&display=swap">
 <style>
@@ -105,6 +112,30 @@ h2.sec{margin:26px 0 12px}
 .new{animation:flash 2.5s ease-out}
 @keyframes flash{0%{background:rgba(41,211,255,.25)}100%{background:transparent}}
 @media (prefers-reduced-motion:reduce){.new{animation:none}}
+/* App no celular */
+body{padding-top:env(safe-area-inset-top,0px);padding-bottom:calc(60px + env(safe-area-inset-bottom,0px))}
+.lembrar{display:flex;gap:8px;align-items:center;color:var(--muted);font-size:.9rem}
+.lembrar input{width:auto}
+.install{display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:var(--surface2);border:1px solid var(--cyan);border-radius:14px;padding:12px 14px;margin-top:14px}
+.install span{flex:1 1 200px;font-size:.92rem}
+@media (max-width:640px){
+  header{padding-block:12px}
+  .hdr-actions{width:100%}
+  .hdr-actions .upd{width:100%}
+  .hdr-actions .btn{flex:1;padding:10px 8px;font-size:.88rem}
+  .kpi{padding:12px}
+  .kpi b{font-size:1.5rem}
+  .tablebox{overflow:visible;border:0;background:transparent}
+  table{min-width:0}
+  thead{display:none}
+  table,tbody,tr,td{display:block;width:100%}
+  tr{background:linear-gradient(180deg,var(--surface2),var(--surface));border:1px solid var(--line);border-radius:14px;padding:6px 14px;margin-bottom:10px}
+  td{border:0;padding:6px 0;display:flex;justify-content:space-between;gap:12px;align-items:center;text-align:right}
+  td::before{content:attr(data-l);color:var(--muted);font-size:.74rem;text-transform:uppercase;letter-spacing:.08em;font-weight:700;text-align:left}
+  td.cliente{display:flex}
+  td.cliente>div{text-align:right}
+  .search{width:100%}
+}
 </style>
 </head>
 <body>
@@ -114,9 +145,16 @@ h2.sec{margin:26px 0 12px}
     <h1>Painel de Vendas</h1>
     <p>Digite a senha do administrador para ver os pedidos.</p>
     <input id="senha" type="password" autocomplete="current-password" placeholder="Senha" required>
+    <label class="lembrar"><input type="checkbox" id="lembrar" checked> Manter conectado neste aparelho</label>
     <div class="err" id="loginErr" hidden></div>
     <button class="btn btn-main" type="submit">Entrar</button>
   </form>
+
+  <div class="install" id="installBar" hidden>
+    <span id="installTxt">Instale o painel no seu celular para abrir com um toque.</span>
+    <button class="btn btn-main" id="btnInstalar" type="button">Instalar app</button>
+    <button class="btn" id="btnFecharInst" type="button" aria-label="Fechar aviso">✕</button>
+  </div>
 
   <div id="app" hidden>
     <header>
@@ -203,8 +241,8 @@ const num = v => Number(v||0).toLocaleString("pt-BR");
 const $ = id => document.getElementById(id);
 let senha = "", pedidos = [], filtro = "todos", vistos = new Set(), primeiraCarga = true;
 
-function lerSenha(){ try{ return sessionStorage.getItem("adm") || "" }catch(_){ return "" } }
-function guardarSenha(s){ try{ s?sessionStorage.setItem("adm",s):sessionStorage.removeItem("adm") }catch(_){} }
+function lerSenha(){ try{ return localStorage.getItem("adm") || sessionStorage.getItem("adm") || "" }catch(_){ return "" } }
+function guardarSenha(s){ try{ localStorage.removeItem("adm"); sessionStorage.removeItem("adm"); if(s){ ($("lembrar").checked?localStorage:sessionStorage).setItem("adm",s) } }catch(_){} }
 function toast(t){ const el=$("toast"); el.textContent=t; el.hidden=false; clearTimeout(toast._t); toast._t=setTimeout(()=>el.hidden=true,2400) }
 
 async function api(path, opts={}){
@@ -264,13 +302,13 @@ function render(destacar=new Set()){
     const wa = (p.whatsapp||"").replace(/\D/g,"");
     const waFull = wa && (wa.length<=11 ? "55"+wa : wa);
     tr.innerHTML = `
-      <td class="num">${d.toLocaleDateString("pt-BR")}<br><span class="id">${d.toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"})}</span></td>
-      <td class="id"></td>
-      <td class="cliente"><b></b><a target="_blank" rel="noopener"></a></td>
-      <td>${waFull?`<a class="wa" target="_blank" rel="noopener" href="https://wa.me/${waFull}"></a>`:'<span class="id">não informado</span>'}</td>
-      <td class="num">${num(p.qtd)} seguidores</td>
-      <td class="num valor">${brl(p.valor)}</td>
-      <td><span class="st" style="--c:var(--s-${p.status})"><select class="status" aria-label="Status do pedido"></select></span></td>`;
+      <td class="num" data-l="Data"><span>${d.toLocaleDateString("pt-BR")}<br><span class="id">${d.toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"})}</span></span></td>
+      <td class="id" data-l="Pedido"></td>
+      <td class="cliente" data-l="Cliente"><div><b></b><a target="_blank" rel="noopener"></a></div></td>
+      <td data-l="WhatsApp">${waFull?`<a class="wa" target="_blank" rel="noopener" href="https://wa.me/${waFull}"></a>`:'<span class="id">não informado</span>'}</td>
+      <td class="num" data-l="Pacote">${num(p.qtd)} seguidores</td>
+      <td class="num valor" data-l="Valor">${brl(p.valor)}</td>
+      <td data-l="Status"><span class="st" style="--c:var(--s-${p.status})"><select class="status" aria-label="Status do pedido"></select></span></td>`;
     tr.children[1].textContent = p.id;
     tr.querySelector(".cliente b").textContent = p.nome;
     const a = tr.querySelector(".cliente a"); a.textContent = "@"+p.instagram; a.href = "https://instagram.com/"+encodeURIComponent(p.instagram);
@@ -364,6 +402,20 @@ $("busca").addEventListener("input", ()=>render());
 $("btnAtualizar").addEventListener("click", carregar);
 $("btnCsv").addEventListener("click", csv);
 $("btnSair").addEventListener("click", ()=>sair());
+
+/* ---------- App instalável ---------- */
+if("serviceWorker" in navigator){ navigator.serviceWorker.register("/sw.js").catch(()=>{}); }
+const instalado = matchMedia("(display-mode: standalone)").matches || navigator.standalone;
+let pedidoInstalar=null;
+function avisoFechado(){ try{ return localStorage.getItem("instOk")==="1" }catch(_){ return false } }
+window.addEventListener("beforeinstallprompt", e=>{ e.preventDefault(); pedidoInstalar=e; if(!instalado && !avisoFechado()) $("installBar").hidden=false; });
+if(!instalado && !avisoFechado() && /iPhone|iPad|iPod/i.test(navigator.userAgent)){
+  $("installTxt").innerHTML="No iPhone: toque em <b>Compartilhar</b> e depois em <b>Adicionar à Tela de Início</b>.";
+  $("btnInstalar").hidden=true; $("installBar").hidden=false;
+}
+$("btnInstalar").addEventListener("click", async ()=>{ if(!pedidoInstalar) return; pedidoInstalar.prompt(); await pedidoInstalar.userChoice.catch(()=>{}); pedidoInstalar=null; $("installBar").hidden=true; });
+$("btnFecharInst").addEventListener("click", ()=>{ $("installBar").hidden=true; try{ localStorage.setItem("instOk","1") }catch(_){} });
+window.addEventListener("appinstalled", ()=>{ $("installBar").hidden=true; });
 
 senha = lerSenha();
 if(senha) entrar(); else $("loginBox").hidden=false;
